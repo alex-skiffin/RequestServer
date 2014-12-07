@@ -3,10 +3,10 @@ using System.Net.Sockets;
 
 namespace Server
 {
-    class Server
+    class ServerProcessor
     {
         readonly TcpListener _listener;
-        public Server(int port)
+        public ServerProcessor(int port)
         {
             _listener = new TcpListener(IPAddress.Any, port);
         }
@@ -28,7 +28,7 @@ namespace Server
             }
         }
 
-        ~Server()
+        ~ServerProcessor()
         {
             Stop();
         }

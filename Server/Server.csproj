@@ -52,7 +52,7 @@
     <Compile Include="RequestProcessor.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Server.cs" />
+    <Compile Include="ServerProcessor.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

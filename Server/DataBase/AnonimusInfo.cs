@@ -1,4 +1,5 @@
 ﻿using System;
+using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
 namespace Server.DataBase
@@ -11,5 +12,10 @@ namespace Server.DataBase
         public DateTime ChangeTime = DateTime.UtcNow;
 
         public string VerySecretInfo = "O_o";
+
+        /// <summary>
+        /// Поля класса, которые есть в монге, но у класса как такового их нет
+        /// </summary>
+        public BsonDocument ExtraElements;
     }
 }
