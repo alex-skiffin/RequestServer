@@ -35,9 +35,13 @@ namespace Server
                 return;
             }
             if (requestMethod == "GET")
-            { Console.WriteLine("Запрос на получение информации"); }
+            {
+                Console.WriteLine("Запрос на получение информации");
+            }
             if (requestMethod == "POST")
-            { Console.WriteLine("Запрос на запись информации"); }
+            {
+                Console.WriteLine("Запрос на запись информации");
+            }
 
             // Получаем строку запроса
             Console.WriteLine(requestMethod);
