@@ -2,6 +2,8 @@
 using System.Net.Sockets;
 using System.Text;
 using System.Text.RegularExpressions;
+using MongoDB.Bson;
+using Server.DataBase;
 
 namespace Server
 {
@@ -11,6 +13,7 @@ namespace Server
         {
             string request = "";
             byte[] buffer = new byte[1024];
+            DBProcessor dbp = new DBProcessor();
             int count;
             while ((count = client.GetStream().Read(buffer, 0, buffer.Length)) > 0)
             {
@@ -31,18 +34,22 @@ namespace Server
             {
                 // Передаем клиенту ошибку 400 - неверный запрос
                 //SendError(Client, 400);
-                Console.WriteLine("Что-то пошло не так\r\n"+requestUri);
+                Console.WriteLine("Что-то пошло не так\r\n" + requestUri);
                 return;
             }
+            string info = string.Empty;
             if (requestMethod == "GET")
             {
                 Console.WriteLine("Запрос на получение информации");
+                info = dbp.GetInfo().ToJson();
             }
             if (requestMethod == "POST")
             {
                 Console.WriteLine("Запрос на запись информации");
             }
-
+            byte[] Buffer = Encoding.ASCII.GetBytes(info);
+            // Отправим его клиенту
+            client.GetStream().Write(Buffer, 0, Buffer.Length);
             // Получаем строку запроса
             Console.WriteLine(requestMethod);
             Console.WriteLine(requestUri);
