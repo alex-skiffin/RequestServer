@@ -3,6 +3,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.Text.RegularExpressions;
 using MongoDB.Bson;
+using Newtonsoft.Json;
 using Server.DataBase;
 
 namespace Server
@@ -56,7 +57,7 @@ namespace Server
             if (requestMethod == "GET")
             {
                 Console.WriteLine("Запрос на получение информации");
-                info = _dbProcessor.GetInfo().ToJson();
+                info = JsonConvert.SerializeObject(_dbProcessor.GetInfo());
             }
             if (requestMethod == "POST")
             {
