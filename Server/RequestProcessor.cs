@@ -9,31 +9,46 @@ namespace Server
 {
     class RequestProcessor
     {
-        public RequestProcessor(TcpClient client)
+        private DBProcessor _dbProcessor = new DBProcessor();
+        public RequestProcessor()
         {
-            string request = "";
-            byte[] buffer = new byte[1024];
-            DBProcessor dbp = new DBProcessor();
-            int count;
-            while ((count = client.GetStream().Read(buffer, 0, buffer.Length)) > 0)
+            // client.Close();
+
+        }
+
+        public void Listen(TcpClient client)
+        {
+            StringBuilder request = new StringBuilder();
+            byte[] bytes = new byte[1024];
+            NetworkStream stream = client.GetStream();
+            int i = stream.Read(bytes, 0, bytes.Length);
+            request.Append(Encoding.ASCII.GetString(bytes, 0, i));
+            do
             {
-                request += Encoding.ASCII.GetString(buffer, 0, count);
-                if (request.IndexOf("\r\n\r\n", StringComparison.Ordinal) >= 0 || request.Length > 4096)
-                {
-                    break;
-                }
+                // Translate data bytes to a ASCII string.
+                Console.WriteLine("Received: {0}", request);
+
+                i = stream.Read(bytes, 0, bytes.Length);
+                request.Append(Encoding.ASCII.GetString(bytes, 0, i));
+            } while (i > 1023);
+
+            Match reqMatch = Regex.Match(request.ToString(), @"^\w+\s+([^\s\?]+)[^\s]*\s+HTTP/.*|");
+            Match methodMatch = Regex.Match(request.ToString(), @"\b\w+");
+            string req = request.ToString();
+            int sss = req.Length;
+            string req2 = request.ToString();
+
+            if (req.Contains("{"))
+            {
+                req = req.Substring(req.IndexOf("{", StringComparison.Ordinal));
             }
-
-            Match reqMatch = Regex.Match(request, @"^\w+\s+([^\s\?]+)[^\s]*\s+HTTP/.*|");
-            Match methodMatch = Regex.Match(request, @"\b\w+");
-
+            int countt = req.Length;
+            int countt2 = req2.Length;
             string requestUri = reqMatch.Groups[1].Value;
             string requestMethod = methodMatch.Value;
             // Если запрос не удался
             if (reqMatch == Match.Empty)
             {
-                // Передаем клиенту ошибку 400 - неверный запрос
-                //SendError(Client, 400);
                 Console.WriteLine("Что-то пошло не так\r\n" + requestUri);
                 return;
             }
@@ -41,20 +56,20 @@ namespace Server
             if (requestMethod == "GET")
             {
                 Console.WriteLine("Запрос на получение информации");
-                info = dbp.GetInfo().ToJson();
+                info = _dbProcessor.GetInfo().ToJson();
             }
             if (requestMethod == "POST")
             {
                 Console.WriteLine("Запрос на запись информации");
+                _dbProcessor.AddInfo(req);
             }
-            byte[] Buffer = Encoding.ASCII.GetBytes(info);
+            byte[] buffer = Encoding.ASCII.GetBytes(info);
             // Отправим его клиенту
-            client.GetStream().Write(Buffer, 0, Buffer.Length);
+            client.GetStream().Write(buffer, 0, buffer.Length);
             // Получаем строку запроса
             Console.WriteLine(requestMethod);
             Console.WriteLine(requestUri);
             client.Close();
-
         }
     }
 }

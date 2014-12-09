@@ -13,10 +13,11 @@ namespace Server
 
         public void Start()
         {
+            var reqpro = new RequestProcessor();
             _listener.Start();
             while (true)
             {
-                new RequestProcessor(_listener.AcceptTcpClient());
+                reqpro.Listen(_listener.AcceptTcpClient());
             }
         }
 

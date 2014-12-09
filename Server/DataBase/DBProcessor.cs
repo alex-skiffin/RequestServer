@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Linq;
+using System.Web.Script.Serialization;
 using MongoDB.Driver;
+using Newtonsoft.Json;
 
 namespace Server.DataBase
 {
@@ -38,9 +40,12 @@ namespace Server.DataBase
 
         public void AddInfo(Guid infoId, string info)
         {
+            _anonimusCollection.Save(info);
         }
         public void AddInfo(string info)
         {
+            var inff = JsonConvert.DeserializeObject<AnonimusInfo>(info);
+            _anonimusCollection.Save(inff);
         }
     }
 }
