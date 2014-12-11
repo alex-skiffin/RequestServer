@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Net.Sockets;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -10,12 +11,7 @@ namespace Server
 {
     class RequestProcessor
     {
-        private DBProcessor _dbProcessor = new DBProcessor();
-        public RequestProcessor()
-        {
-            // client.Close();
-
-        }
+        private readonly DBProcessor _dbProcessor = new DBProcessor();
 
         public void Listen(TcpClient client)
         {
@@ -26,26 +22,23 @@ namespace Server
             request.Append(Encoding.ASCII.GetString(bytes, 0, i));
             do
             {
-                // Translate data bytes to a ASCII string.
                 Console.WriteLine("Received: {0}", request);
-
-                i = stream.Read(bytes, 0, bytes.Length);
-                request.Append(Encoding.ASCII.GetString(bytes, 0, i));
+                if (request.ToString().Contains("POST"))
+                {
+                    i = stream.Read(bytes, 0, bytes.Length);
+                    request.Append(Encoding.ASCII.GetString(bytes, 0, i));
+                }
             } while (i > 1023);
 
             Match reqMatch = Regex.Match(request.ToString(), @"^\w+\s+([^\s\?]+)[^\s]*\s+HTTP/.*|");
             Match methodMatch = Regex.Match(request.ToString(), @"\b\w+");
             string req = request.ToString();
-            int sss = req.Length;
-            string req2 = request.ToString();
-
             if (req.Contains("{"))
             {
                 req = req.Substring(req.IndexOf("{", StringComparison.Ordinal));
             }
-            int countt = req.Length;
-            int countt2 = req2.Length;
             string requestUri = reqMatch.Groups[1].Value;
+            string command = requestUri.Split('/')[1];
             string requestMethod = methodMatch.Value;
             // Если запрос не удался
             if (reqMatch == Match.Empty)
@@ -57,7 +50,13 @@ namespace Server
             if (requestMethod == "GET")
             {
                 Console.WriteLine("Запрос на получение информации");
-                info = JsonConvert.SerializeObject(_dbProcessor.GetInfo());
+                if(command=="all")
+                    info = JsonConvert.SerializeObject(_dbProcessor.GetInfo());
+                else if (command == "this")
+                    info = JsonConvert.SerializeObject(_dbProcessor.GetInfo(Guid.Parse(requestUri.Split('/')[2])));
+                else
+                    info = JsonConvert.SerializeObject(_dbProcessor.GetInfo());
+
             }
             if (requestMethod == "POST")
             {
@@ -66,10 +65,10 @@ namespace Server
             }
             byte[] buffer = Encoding.ASCII.GetBytes(info);
             // Отправим его клиенту
-            client.GetStream().Write(buffer, 0, buffer.Length);
             // Получаем строку запроса
             Console.WriteLine(requestMethod);
             Console.WriteLine(requestUri);
+            client.GetStream().Write(buffer, 0, buffer.Length);
             client.Close();
         }
     }
