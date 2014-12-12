@@ -51,7 +51,7 @@ namespace Server
             {
                 Console.WriteLine("Запрос на получение информации");
                 if(command=="all")
-                    info = JsonConvert.SerializeObject(_dbProcessor.GetInfo());
+                    info = JsonConvert.SerializeObject(_dbProcessor.GetAllInfo());
                 else if (command == "this")
                     info = JsonConvert.SerializeObject(_dbProcessor.GetInfo(Guid.Parse(requestUri.Split('/')[2])));
                 else

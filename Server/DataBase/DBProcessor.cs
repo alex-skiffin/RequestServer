@@ -48,5 +48,10 @@ namespace Server.DataBase
             var inff = JsonConvert.DeserializeObject<AnonimusInfo>(info);
             _anonimusCollection.Save(inff);
         }
+
+        public object GetAllInfo()
+        {
+            return _anonimusCollection.FindAll();
+        }
     }
 }
