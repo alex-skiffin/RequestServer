@@ -22,7 +22,7 @@ namespace Server
             do
             {
                 Console.WriteLine("Received: {0}", request);
-                if (request.ToString().Contains("POST"))
+                if (request.ToString().Contains("POST") && i >= 1023)
                 {
                     i = stream.Read(bytes, 0, bytes.Length);
                     request.Append(Encoding.ASCII.GetString(bytes, 0, i));
@@ -50,21 +50,24 @@ namespace Server
             {
                 var jsonSerialiser = new JavaScriptSerializer();
                 Console.WriteLine("Запрос на получение информации");
-                if(command=="all")
+                if (command == "all")
                     info = jsonSerialiser.Serialize(_dbProcessor.GetAllInfo());
                 else if (command == "this")
                     info = JsonConvert.SerializeObject(_dbProcessor.GetInfo(Guid.Parse(requestUri.Split('/')[2])));
                 else
                     info = JsonConvert.SerializeObject(_dbProcessor.GetInfo());
+                byte[] buffer = Encoding.ASCII.GetBytes("HTTP/1.1 200 \nContent-type: text\nContent-Length:" + info.Length + "\n\n" + info);
+                client.GetStream().Write(buffer, 0, buffer.Length);
 
             }
             if (requestMethod == "POST")
             {
                 Console.WriteLine("Запрос на запись информации");
-                _dbProcessor.AddInfo(req);
+                if (req.Contains("{"))
+                    _dbProcessor.AddInfo(req);
+                else
+                    Console.WriteLine("Кривой запрос");
             }
-            byte[] buffer = Encoding.ASCII.GetBytes("HTTP/1.1 200 \nContent-type: text\nContent-Length:" + info.Length + "\n\n" + info);
-            client.GetStream().Write(buffer, 0, buffer.Length);
             // Отправим его клиенту
             // Получаем строку запроса
             Console.WriteLine(requestMethod);

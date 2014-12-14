@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using MongoDB.Bson;
+using System.Globalization;
 using MongoDB.Bson.Serialization.Attributes;
 
 namespace Server.DataBase
@@ -10,14 +10,14 @@ namespace Server.DataBase
         [BsonId]
         public Guid Id = Guid.Empty;
 
-        public DateTime ChangeTime = DateTime.UtcNow;
+        public string ChangeTime = DateTime.UtcNow.ToString(CultureInfo.InvariantCulture);
 
         public string VerySecretInfo = "O_o";
 
-        /// <summary>
+        /*/// <summary>
         /// Поля класса, которые есть в монге, но у класса как такового их нет
         /// </summary>
-        public BsonDocument ExtraElements;
+        public BsonDocument ExtraElements;*/
     }
 
     public class AllInfo
