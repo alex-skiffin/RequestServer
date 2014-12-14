@@ -49,9 +49,9 @@ namespace Server.DataBase
             _anonimusCollection.Save(inff);
         }
 
-        public object GetAllInfo()
+        public AllInfo GetAllInfo()
         {
-            return _anonimusCollection.FindAll();
+            return new AllInfo {AllInfos = _anonimusCollection.FindAll().ToList()};
         }
     }
 }

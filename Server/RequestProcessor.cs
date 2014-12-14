@@ -1,9 +1,8 @@
 ﻿using System;
-using System.IO;
 using System.Net.Sockets;
 using System.Text;
 using System.Text.RegularExpressions;
-using MongoDB.Bson;
+using System.Web.Script.Serialization;
 using Newtonsoft.Json;
 using Server.DataBase;
 
@@ -40,7 +39,7 @@ namespace Server
             string requestUri = reqMatch.Groups[1].Value;
             string command = requestUri.Split('/')[1];
             string requestMethod = methodMatch.Value;
-            // Если запрос не удался
+
             if (reqMatch == Match.Empty)
             {
                 Console.WriteLine("Что-то пошло не так\r\n" + requestUri);
@@ -49,9 +48,10 @@ namespace Server
             string info = string.Empty;
             if (requestMethod == "GET")
             {
+                var jsonSerialiser = new JavaScriptSerializer();
                 Console.WriteLine("Запрос на получение информации");
                 if(command=="all")
-                    info = JsonConvert.SerializeObject(_dbProcessor.GetAllInfo());
+                    info = jsonSerialiser.Serialize(_dbProcessor.GetAllInfo());
                 else if (command == "this")
                     info = JsonConvert.SerializeObject(_dbProcessor.GetInfo(Guid.Parse(requestUri.Split('/')[2])));
                 else
@@ -63,12 +63,12 @@ namespace Server
                 Console.WriteLine("Запрос на запись информации");
                 _dbProcessor.AddInfo(req);
             }
-            byte[] buffer = Encoding.ASCII.GetBytes(info);
+            byte[] buffer = Encoding.ASCII.GetBytes("HTTP/1.1 200 \nContent-type: text\nContent-Length:" + info.Length + "\n\n" + info);
+            client.GetStream().Write(buffer, 0, buffer.Length);
             // Отправим его клиенту
             // Получаем строку запроса
             Console.WriteLine(requestMethod);
             Console.WriteLine(requestUri);
-            client.GetStream().Write(buffer, 0, buffer.Length);
             client.Close();
         }
     }
