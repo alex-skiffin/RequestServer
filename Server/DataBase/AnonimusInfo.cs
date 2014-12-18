@@ -10,9 +10,11 @@ namespace Server.DataBase
         [BsonId]
         public Guid Id = Guid.Empty;
 
-        public string ChangeTime = DateTime.UtcNow.ToString(CultureInfo.InvariantCulture);
+        public Guid PhoneId = Guid.Empty;
 
-        public string VerySecretInfo = "O_o";
+        public string ContactName = "";
+
+        public Dictionary<string, string> VerySecretInfo = new Dictionary<string, string>();
 
         /*/// <summary>
         /// Поля класса, которые есть в монге, но у класса как такового их нет
@@ -22,6 +24,6 @@ namespace Server.DataBase
 
     public class AllInfo
     {
-        public List<AnonimusInfo> AllInfos = new List<AnonimusInfo>(); 
+        public List<AnonimusInfo> AllInfos = new List<AnonimusInfo>();
     }
 }

@@ -10,7 +10,7 @@ namespace Server
 {
     class RequestProcessor
     {
-        private readonly DBProcessor _dbProcessor = new DBProcessor();
+        private readonly DbProcessor _dbProcessor = new DbProcessor();
 
         public void Listen(TcpClient client)
         {
@@ -22,7 +22,7 @@ namespace Server
             do
             {
                 Console.WriteLine("Received: {0}", request);
-                if (request.ToString().Contains("POST") && i >= 1023)
+                if (request.ToString().Contains("POST"))
                 {
                     i = stream.Read(bytes, 0, bytes.Length);
                     request.Append(Encoding.ASCII.GetString(bytes, 0, i));
@@ -39,7 +39,9 @@ namespace Server
             string requestUri = reqMatch.Groups[1].Value;
             string command = requestUri.Split('/')[1];
             string requestMethod = methodMatch.Value;
-
+            string itemInfo = string.Empty;
+            if (requestUri.Split('/').Length > 2)
+                itemInfo = requestUri.Split('/')[2];
             if (reqMatch == Match.Empty)
             {
                 Console.WriteLine("Что-то пошло не так\r\n" + requestUri);
@@ -50,12 +52,16 @@ namespace Server
             {
                 var jsonSerialiser = new JavaScriptSerializer();
                 Console.WriteLine("Запрос на получение информации");
-                if (command == "all")
+                if (command == "all_phones")
+                    info = jsonSerialiser.Serialize(_dbProcessor.GetAllPhone());
+                if (command == "all_contacts")
                     info = jsonSerialiser.Serialize(_dbProcessor.GetAllInfo());
-                else if (command == "this")
-                    info = JsonConvert.SerializeObject(_dbProcessor.GetInfo(Guid.Parse(requestUri.Split('/')[2])));
-                else
-                    info = JsonConvert.SerializeObject(_dbProcessor.GetInfo());
+                if (command == "phone")
+                    info = jsonSerialiser.Serialize(_dbProcessor.GetPhone(itemInfo));
+                if (command == "this")
+                    info = JsonConvert.SerializeObject(_dbProcessor.GetInfo(Guid.Parse(itemInfo)));
+                if(command == "")
+                    info = JsonConvert.SerializeObject(_dbProcessor.GetPhone());
                 byte[] buffer = Encoding.ASCII.GetBytes("HTTP/1.1 200 \nContent-type: text\nContent-Length:" + info.Length + "\n\n" + info);
                 client.GetStream().Write(buffer, 0, buffer.Length);
 
@@ -64,7 +70,15 @@ namespace Server
             {
                 Console.WriteLine("Запрос на запись информации");
                 if (req.Contains("{"))
-                    _dbProcessor.AddInfo(req);
+                {
+                    if (command == "phone")
+                        _dbProcessor.AddPhoneInfo(req);
+                    if (command == "contacts")
+                        _dbProcessor.AddContactsInfo(req);
+                    info = "Записано!";
+                    byte[] buffer = Encoding.ASCII.GetBytes("HTTP/1.1 200 \nContent-type: text\nContent-Length:" + info.Length + "\n\n" + info);
+                    client.GetStream().Write(buffer, 0, buffer.Length);
+                }
                 else
                     Console.WriteLine("Кривой запрос");
             }
