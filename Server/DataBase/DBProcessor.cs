@@ -37,9 +37,13 @@ namespace Server.DataBase
         {
             return _anonimusCollection.FindOne();
         }
-        public AnonimusInfo GetInfo(Guid id)
+        public AnonimusInfo GetInfo(string contactInfo)
         {
-            return _anonimusCollection.FindOneById(id);
+            Guid tempGuid;
+            if(Guid.TryParse(contactInfo, out tempGuid))
+                return _anonimusCollection.FindOneById(tempGuid);
+            var query = Query.EQ("ContactName", contactInfo);
+            return _anonimusCollection.FindOne(query);
         }
         public Phone GetPhone()
         {

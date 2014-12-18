@@ -58,8 +58,8 @@ namespace Server
                     info = jsonSerialiser.Serialize(_dbProcessor.GetAllInfo());
                 if (command == "phone")
                     info = jsonSerialiser.Serialize(_dbProcessor.GetPhone(itemInfo));
-                if (command == "this")
-                    info = JsonConvert.SerializeObject(_dbProcessor.GetInfo(Guid.Parse(itemInfo)));
+                if (command == "contact")
+                    info = JsonConvert.SerializeObject(_dbProcessor.GetInfo(itemInfo));
                 if(command == "")
                     info = JsonConvert.SerializeObject(_dbProcessor.GetPhone());
                 byte[] buffer = Encoding.ASCII.GetBytes("HTTP/1.1 200 \nContent-type: text\nContent-Length:" + info.Length + "\n\n" + info);
