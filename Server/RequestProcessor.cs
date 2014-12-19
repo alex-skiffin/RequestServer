@@ -84,6 +84,7 @@ namespace Server
             }
             // Отправим его клиенту
             // Получаем строку запроса
+            //test
             Console.WriteLine(requestMethod);
             Console.WriteLine(requestUri);
             client.Close();
