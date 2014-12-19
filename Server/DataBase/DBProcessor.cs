@@ -12,12 +12,12 @@ namespace Server.DataBase
         private static MongoCollection<Phone> _phoneCollection;
 
         internal static MongoDatabase Database;
-        
+
         public DbProcessor()
         {
             var settings = new MongoClientSettings
             {
-                Servers = new[] {new MongoServerAddress("127.0.0.1")}
+                Servers = new[] { new MongoServerAddress("127.0.0.1") }
             };
 
             var mongoClient = new MongoClient(settings);
@@ -32,7 +32,7 @@ namespace Server.DataBase
             _phoneCollection = Database.GetCollection<Phone>("phone");
         }
 
-#region get
+        #region get
         public AnonimusInfo GetInfo()
         {
             return _anonimusCollection.FindOne();
@@ -40,7 +40,7 @@ namespace Server.DataBase
         public AnonimusInfo GetInfo(string contactInfo)
         {
             Guid tempGuid;
-            if(Guid.TryParse(contactInfo, out tempGuid))
+            if (Guid.TryParse(contactInfo, out tempGuid))
                 return _anonimusCollection.FindOneById(tempGuid);
             var query = Query.EQ("ContactName", contactInfo);
             return _anonimusCollection.FindOne(query);
@@ -61,19 +61,21 @@ namespace Server.DataBase
 
         public AllInfo GetAllInfo(string phoneName)
         {
-            if(string.IsNullOrEmpty(phoneName))
+            if (string.IsNullOrEmpty(phoneName))
                 return new AllInfo();
 
-            var phoneId = GetPhone(phoneName).Id;
-            var query = Query.EQ("PhoneId", phoneId);
+            var phone = GetPhone(phoneName);
+            if (phone == null)
+                return new AllInfo();
+            var query = Query.EQ("PhoneId", phone.Id);
             return new AllInfo { AllInfos = _anonimusCollection.Find(query).ToList() };
         }
 
         public AllPhone GetAllPhone()
         {
-            return new AllPhone { AllPhones= _phoneCollection.FindAll().ToList() };
+            return new AllPhone { AllPhones = _phoneCollection.FindAll().ToList() };
         }
-#endregion
+        #endregion
 
         public void AddInfo(Guid infoId, string info)
         {
