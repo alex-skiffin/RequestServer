@@ -65,7 +65,7 @@ namespace Server.DataBase
                 return new AllInfo();
 
             var phoneId = GetPhone(phoneName).Id;
-            var query = Query.EQ("_id", phoneId);
+            var query = Query.EQ("PhoneId", phoneId);
             return new AllInfo { AllInfos = _anonimusCollection.Find(query).ToList() };
         }
 
