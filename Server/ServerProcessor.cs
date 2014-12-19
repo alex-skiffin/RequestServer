@@ -19,7 +19,14 @@ namespace Server
             _listener.Start();
             while (true)
             {
-                reqpro.Listen(_listener.AcceptTcpClient());
+                try
+                {
+                    reqpro.Listen(_listener.AcceptTcpClient());
+                }
+                catch (Exception exception)
+                {
+                    Console.WriteLine(exception.Message);
+                }
             }
         }
 
