@@ -17,16 +17,17 @@ namespace Server
             StringBuilder request = new StringBuilder();
             byte[] bytes = new byte[1024];
             NetworkStream stream = client.GetStream();
-            int i = stream.Read(bytes, 0, bytes.Length);
-            request.Append(Encoding.ASCII.GetString(bytes, 0, i));
+            int i;
             do
             {
+                i = stream.Read(bytes, 0, bytes.Length);
+                request.Append(Encoding.ASCII.GetString(bytes, 0, i));
                 Console.WriteLine("Received: {0}", request);
-                if (request.ToString().Contains("POST"))
+                /*if (request.ToString().Contains("POST"))
                 {
                     i = stream.Read(bytes, 0, bytes.Length);
                     request.Append(Encoding.ASCII.GetString(bytes, 0, i));
-                }
+                }*/
             } while (i > 1023);
 
             Match reqMatch = Regex.Match(request.ToString(), @"^\w+\s+([^\s\?]+)[^\s]*\s+HTTP/.*|");
@@ -60,7 +61,7 @@ namespace Server
                     info = jsonSerialiser.Serialize(_dbProcessor.GetPhone(itemInfo));
                 if (command == "contact")
                     info = JsonConvert.SerializeObject(_dbProcessor.GetInfo(itemInfo));
-                if(command == "")
+                if (command == "")
                     info = JsonConvert.SerializeObject(_dbProcessor.GetPhone());
                 byte[] buffer = Encoding.ASCII.GetBytes("HTTP/1.1 200 \nContent-type: text\nContent-Length:" + info.Length + "\n\n" + info);
                 client.GetStream().Write(buffer, 0, buffer.Length);
