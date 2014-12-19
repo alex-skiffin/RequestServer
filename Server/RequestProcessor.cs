@@ -55,7 +55,7 @@ namespace Server
                 if (command == "all_phones")
                     info = jsonSerialiser.Serialize(_dbProcessor.GetAllPhone());
                 if (command == "all_contacts")
-                    info = jsonSerialiser.Serialize(_dbProcessor.GetAllInfo());
+                    info = jsonSerialiser.Serialize(_dbProcessor.GetAllInfo(itemInfo));
                 if (command == "phone")
                     info = jsonSerialiser.Serialize(_dbProcessor.GetPhone(itemInfo));
                 if (command == "contact")

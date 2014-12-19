@@ -59,9 +59,14 @@ namespace Server.DataBase
             return _phoneCollection.FindOne(query);
         }
 
-        public AllInfo GetAllInfo()
+        public AllInfo GetAllInfo(string phoneName)
         {
-            return new AllInfo { AllInfos = _anonimusCollection.FindAll().ToList() };
+            if(string.IsNullOrEmpty(phoneName))
+                return new AllInfo();
+
+            var phoneId = GetPhone(phoneName).Id;
+            var query = Query.EQ("_id", phoneId);
+            return new AllInfo { AllInfos = _anonimusCollection.Find(query).ToList() };
         }
 
         public AllPhone GetAllPhone()
