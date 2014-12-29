@@ -81,10 +81,18 @@ namespace Server.DataBase
         {
             _anonimusCollection.Save(info);
         }
-        public void AddContactsInfo(string info)
+        public void AddContactInfo(string info)
         {
             var inff = JsonConvert.DeserializeObject<AnonimusInfo>(info.Replace("[", "").Replace("]", ""));
             _anonimusCollection.Save(inff);
+        }
+        public void AddAllContactsInfo(string info)
+        {
+            var inff = JsonConvert.DeserializeObject<AllInfo>(info);
+            foreach (var inf in inff.AllInfos)
+            {
+                _anonimusCollection.Save(inf);
+            }
         }
         public void AddPhoneInfo(string info)
         {
