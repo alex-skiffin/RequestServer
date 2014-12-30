@@ -37,8 +37,8 @@ namespace Server
 
                 Console.WriteLine("{0} request was caught: {1}",
                                    request.HttpMethod, request.Url);
-                string msg = context.Request.HttpMethod + " " + context.Request.Url;
-                Console.WriteLine(msg);
+                string msg = reqpro.Get();
+                //Console.WriteLine(msg);
 
                 response.StatusCode = (int)HttpStatusCode.OK;
                 byte[] b = Encoding.UTF8.GetBytes(msg);

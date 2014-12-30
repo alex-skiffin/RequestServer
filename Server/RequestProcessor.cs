@@ -98,12 +98,15 @@ namespace Server
             client.GetStream().Write(buffer, 0, buffer.Length);
             client.Close();
         }
-/*
         public string Get()
         {
+            var jsonSerialiser = new JavaScriptSerializer();
+            return  jsonSerialiser.Serialize(_dbProcessor.GetAllPhone());
         }
         public string Get(Guid id)
         {
-        }*/
+            var jsonSerialiser = new JavaScriptSerializer();
+            return jsonSerialiser.Serialize(_dbProcessor.GetAllPhone());
+        }
     }
 }
