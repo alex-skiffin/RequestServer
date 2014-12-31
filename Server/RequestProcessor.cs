@@ -24,7 +24,6 @@ namespace Server
                 int i = stream.Read(bytes, 0, bytes.Length);
                 request.Append(Encoding.ASCII.GetString(bytes, 0, i));
 
-
                 if (request.ToString().Contains("POST") && !request.ToString().Contains("phone"))
                     do
                     {
@@ -106,7 +105,7 @@ namespace Server
         public string Get(Guid id)
         {
             var jsonSerialiser = new JavaScriptSerializer();
-            return jsonSerialiser.Serialize(_dbProcessor.GetAllPhone());
+            return jsonSerialiser.Serialize(_dbProcessor.GetAllInfo((new Phone(){Id = id}).ToString()));
         }
     }
 }
