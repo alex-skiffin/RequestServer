@@ -2,14 +2,12 @@
 using System.IO;
 using System.Net;
 using System.Text;
-using System.Threading;
 
 namespace Server
 {
     class ServerProcessor
     {
         readonly HttpListener _listener;
-        private Thread _serverThread;
         public ServerProcessor(int port)
         {
             _listener = new HttpListener();
@@ -29,40 +27,22 @@ namespace Server
                 HttpListenerRequest request = context.Request;
                 HttpListenerResponse response = context.Response;
                 //Создаем ответ
-                string requestBody;
                 Stream inputStream = request.InputStream;
                 Encoding encoding = request.ContentEncoding;
                 StreamReader reader = new StreamReader(inputStream, encoding);
-                requestBody = reader.ReadToEnd();
+                var requestBody = reader.ReadToEnd();
 
                 Console.WriteLine("{0} request was caught: {1}",
                                    request.HttpMethod, request.Url);
-                string msg = reqpro.Get();
+                var urlParts = request.Url.AbsolutePath.Split('/');
+                string msg = reqpro.GetResponseData(request.HttpMethod, urlParts, requestBody);
                 //Console.WriteLine(msg);
 
                 response.StatusCode = (int)HttpStatusCode.OK;
                 byte[] b = Encoding.UTF8.GetBytes(msg);
                 context.Response.ContentLength64 = b.Length;
                 context.Response.OutputStream.Write(b, 0, b.Length);
-
-                //Возвращаем ответ
-                using (Stream stream = response.OutputStream) { }
             }
-            /*_listener.Start();
-            while (true)
-            {
-                try
-                {
-
-                    _serverThread = new Thread(ServerWorkerFunc) { IsBackground = true, Name = "ListenerThread" };
-                    _serverThread.Start();
-                    reqpro.Listen(_listener.AcceptTcpClient());
-                }
-                catch (Exception exception)
-                {
-                    Console.WriteLine(exception.Message);
-                }
-            }*/
         }
 
         public void Stop()
