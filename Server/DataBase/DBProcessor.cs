@@ -15,21 +15,27 @@ namespace Server.DataBase
 
         public DbProcessor()
         {
-            var settings = new MongoClientSettings
+            try
             {
-                Servers = new[] { new MongoServerAddress("127.0.0.1") }
-            };
+                var settings = new MongoClientSettings
+                {
+                    Servers = new[] {new MongoServerAddress("127.0.0.1")}
+                };
 
-            var mongoClient = new MongoClient(settings);
-            if (mongoClient == null)
-                throw new MongoAuthenticationException("Не удалось подключить MongoClient к серверу");
+                var mongoClient = new MongoClient(settings);
 
-            var server = mongoClient.GetServer();
-            Database = server.GetDatabase("anon");
-            Database.CollectionExists("info");
-            Database.CollectionExists("phone");
-            _anonimusCollection = Database.GetCollection<AnonimusInfo>("info");
-            _phoneCollection = Database.GetCollection<Phone>("phone");
+                var server = mongoClient.GetServer();
+                Database = server.GetDatabase("anon");
+                Database.CollectionExists("info");
+                Database.CollectionExists("phone");
+                _anonimusCollection = Database.GetCollection<AnonimusInfo>("info");
+                _phoneCollection = Database.GetCollection<Phone>("phone");
+            }
+            catch
+            {
+                Console.WriteLine("\r\nБаза данных недоступна!");
+                throw;
+            }
         }
 
         #region get

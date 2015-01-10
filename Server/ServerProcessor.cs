@@ -11,8 +11,12 @@ namespace Server
         public ServerProcessor(int port)
         {
             _listener = new HttpListener();
+            int sslPort = port + 10000 > 65000 ? 17070 : port + 10000;
+            //_listener.Prefixes. = new X509Certificate(File.ReadAllBytes("server.crt"));
             _listener.Prefixes.Add(string.Format("http://*:{0}/", port));
+            _listener.Prefixes.Add(string.Format("https://*:{0}/", sslPort));
             Console.WriteLine("Listening on port {0}...", port);
+            Console.WriteLine("Listening on SSL port {0}...", sslPort);
         }
 
         public void Start()

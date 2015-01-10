@@ -1,10 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using System.Net;
-using System.Net.Sockets;
 
 namespace Server
 {
@@ -18,10 +13,8 @@ namespace Server
             var server = new ServerProcessor(port);
             Task listen = new Task(() => server.Start());
             listen.Start();
-            Console.WriteLine("Сервер запущен на порту {0}", port);
             Console.WriteLine("Для остановки сервера нажмите ENTER...");
             Console.ReadLine();
         }
-
     }
 }
