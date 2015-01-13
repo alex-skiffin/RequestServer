@@ -53,6 +53,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DataBase\AnonimusInfo.cs" />
+    <Compile Include="DataBase\Contact.cs" />
     <Compile Include="DataBase\DbProcessor.cs" />
     <Compile Include="DataBase\Phone.cs" />
     <Compile Include="RequestProcessor.cs" />
