@@ -44,6 +44,8 @@ namespace Server
                 info = jsonSerialiser.Serialize(_dbProcessor.GetPhone(commandData[2]));
             if (commandData[1] == "contact")
                 info = JsonConvert.SerializeObject(_dbProcessor.GetInfo(commandData[2]));
+            if (commandData[1] == "profile")
+                info = JsonConvert.SerializeObject(_dbProcessor.GetProfile(commandData[2]));
             if (commandData[1] == "")
                 info = JsonConvert.SerializeObject(_dbProcessor.GetPhone());
             return info;
@@ -55,6 +57,8 @@ namespace Server
                 _dbProcessor.AddPhoneInfo(requestBody);
             if (commandData[1] == "contacts")
                 _dbProcessor.AddAllContactsInfo(requestBody);
+            if (commandData[1] == "profile")
+                _dbProcessor.AddProfile(requestBody);
             if (commandData[1] == "")
                 return "Unkown request";
             return "Записано!";
