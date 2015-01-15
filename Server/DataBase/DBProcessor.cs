@@ -10,7 +10,7 @@ namespace Server.DataBase
     {
         private static MongoCollection<AnonimusInfo> _anonimusCollection;
         private static MongoCollection<Phone> _phoneCollection;
-        private static MongoCollection<Contact> _profileCollection;
+        private static MongoCollection<Profile> _profileCollection;
 
         internal static MongoDatabase Database;
 
@@ -31,7 +31,7 @@ namespace Server.DataBase
                 Database.CollectionExists("phone");
                 Database.CollectionExists("profile");
                 _anonimusCollection = Database.GetCollection<AnonimusInfo>("info");
-                _profileCollection = Database.GetCollection<Contact>("profile");
+                _profileCollection = Database.GetCollection<Profile>("profile");
                 _phoneCollection = Database.GetCollection<Phone>("phone");
             }
             catch
@@ -85,7 +85,7 @@ namespace Server.DataBase
             return new AllPhone { AllPhones = _phoneCollection.FindAll().ToList() };
         }
 
-        public Contact GetProfile(string profileId)
+        public Profile GetProfile(string profileId)
         {
             var id = Guid.Parse(profileId);
             return _profileCollection.FindOneById(id);
@@ -117,7 +117,7 @@ namespace Server.DataBase
 
         public void AddProfile(string requestBody)
         {
-            var inff = JsonConvert.DeserializeObject<Contact>(requestBody);
+            var inff = JsonConvert.DeserializeObject<Profile>(requestBody);
             _phoneCollection.Save(inff);
         }
     }

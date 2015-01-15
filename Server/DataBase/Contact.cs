@@ -3,10 +3,12 @@ using MongoDB.Bson.Serialization.Attributes;
 
 namespace Server.DataBase
 {
-    public class Contact
+    public class Profile
     {
         [BsonId]
         public Guid Id = new Guid();
+
+        public string ProfileName;
 
         public string Prefix;
         public string Name;
