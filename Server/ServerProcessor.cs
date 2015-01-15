@@ -12,7 +12,6 @@ namespace Server
         {
             _listener = new HttpListener();
             int sslPort = port + 10000 > 65000 ? 17070 : port + 10000;
-            //_listener.Prefixes. = new X509Certificate(File.ReadAllBytes("server.crt"));
             _listener.Prefixes.Add(string.Format("http://*:{0}/", port));
             _listener.Prefixes.Add(string.Format("https://*:{0}/", sslPort));
             Console.WriteLine("Listening on port {0}...", port);
@@ -42,14 +41,13 @@ namespace Server
                         request.HttpMethod, request.Url);
                     var urlParts = request.Url.AbsolutePath.Split('/');
                     string msg = reqpro.GetResponseData(request.HttpMethod, urlParts, requestBody);
-                    //Console.WriteLine(msg);
 
                     response.StatusCode = (int) HttpStatusCode.OK;
                     byte[] b = Encoding.UTF8.GetBytes(msg);
                     context.Response.ContentLength64 = b.Length;
                     context.Response.OutputStream.Write(b, 0, b.Length);
                 }
-                catch { }
+                catch { Console.WriteLine("Net trouble"); }
             }
         }
 
