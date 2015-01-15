@@ -40,14 +40,26 @@ namespace Server
                     Console.WriteLine("{0} request was caught: {1}",
                         request.HttpMethod, request.Url);
                     var urlParts = request.Url.AbsolutePath.Split('/');
-                    string msg = reqpro.GetResponseData(request.HttpMethod, urlParts, requestBody);
+                    string msg = string.Empty;
+                    try
+                    {
+                        msg = reqpro.GetResponseData(request.HttpMethod, urlParts, requestBody);
+                    }
+                    catch (Exception e)
+                    {
+                        msg = "request error! " + e.Message;
+                        Console.WriteLine(msg);
+                    }
 
-                    response.StatusCode = (int) HttpStatusCode.OK;
+                    response.StatusCode = (int)HttpStatusCode.OK;
                     byte[] b = Encoding.UTF8.GetBytes(msg);
                     context.Response.ContentLength64 = b.Length;
                     context.Response.OutputStream.Write(b, 0, b.Length);
                 }
-                catch { Console.WriteLine("Net trouble"); }
+                catch (Exception exception)
+                {
+                    Console.WriteLine("Net trouble\r\n" + exception.Message);
+                }
             }
         }
 
