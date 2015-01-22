@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Linq;
 using MongoDB.Driver;
 using MongoDB.Driver.Builders;
@@ -11,16 +12,21 @@ namespace Server.DataBase
         private static MongoCollection<AnonimusInfo> _anonimusCollection;
         private static MongoCollection<Phone> _phoneCollection;
         private static MongoCollection<Profile> _profileCollection;
+        private static MongoCollection<AuthInfo> _authCollection;
+        private string _login = string.Empty;
+        private string _password = string.Empty;
 
         internal static MongoDatabase Database;
 
         public DbProcessor()
         {
+            ReadCredentionals();
             try
             {
                 var settings = new MongoClientSettings
                 {
-                    Servers = new[] {new MongoServerAddress("127.0.0.1")}
+                    Servers = new[] { new MongoServerAddress("127.0.0.1") },
+                    Credentials = new[] { new MongoCredential(new MongoInternalIdentity("anon", _login), new PasswordEvidence(_password)) }
                 };
 
                 var mongoClient = new MongoClient(settings);
@@ -33,10 +39,33 @@ namespace Server.DataBase
                 _anonimusCollection = Database.GetCollection<AnonimusInfo>("info");
                 _profileCollection = Database.GetCollection<Profile>("profile");
                 _phoneCollection = Database.GetCollection<Phone>("phone");
+                _authCollection = Database.GetCollection<AuthInfo>("auth");
             }
             catch
             {
                 Console.WriteLine("\r\nБаза данных недоступна!");
+                throw;
+            }
+        }
+
+        private void ReadCredentionals()
+        {
+            try
+            {
+                var read = File.ReadAllText("creds.cfg");
+                var creds = read.Split(':');
+                if (creds.Length == 0)
+                    throw new Exception("Логин-пароль отсутствуют");
+                _login = creds[0];
+                _password = creds[1];
+
+            }
+            catch (FileNotFoundException)
+            {
+                throw new Exception("Нет файла с логином-паролем");
+            }
+            catch (Exception)
+            {
                 throw;
             }
         }
@@ -119,6 +148,25 @@ namespace Server.DataBase
         {
             var inff = JsonConvert.DeserializeObject<Profile>(requestBody);
             _phoneCollection.Save(inff);
+        }
+
+        public static void CheckAuth(string userName, string passHash)
+        {
+            var query = Query.EQ("UserName", userName);
+            if (_authCollection.FindOne(query).PassHash != passHash)
+                throw new Exception("Access denied!!!");
+        }
+
+        public bool NameFree(string userName)
+        {
+            var query = Query.EQ("UserName", userName);
+            return _authCollection.FindOne(query) != null;
+        }
+
+        public void AddRegisterInfo(string authInfo)
+        {
+            var auth = JsonConvert.DeserializeObject<AuthInfo>(authInfo);
+            _authCollection.Save(auth);
         }
     }
 }

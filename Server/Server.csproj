@@ -31,6 +31,9 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject>Server.Program</StartupObject>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="MongoDB.Bson">
       <HintPath>D:\proetc\maks\MongoDB.Bson.dll</HintPath>
@@ -53,9 +56,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DataBase\AnonimusInfo.cs" />
+    <Compile Include="DataBase\AuthInfo.cs" />
     <Compile Include="DataBase\Contact.cs" />
     <Compile Include="DataBase\DbProcessor.cs" />
     <Compile Include="DataBase\Phone.cs" />
+    <Compile Include="Requester\Requests.cs" />
     <Compile Include="RequestProcessor.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -63,6 +68,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="creds.cfg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -2,6 +2,7 @@
 using System.IO;
 using System.Net;
 using System.Text;
+using Server.DataBase;
 
 namespace Server
 {
@@ -40,18 +41,23 @@ namespace Server
                     Console.WriteLine("{0} request was caught: {1}",
                         request.HttpMethod, request.Url);
                     var urlParts = request.Url.AbsolutePath.Split('/');
-                    string msg = string.Empty;
+                    string msg;
+                    
                     try
                     {
+                        if (urlParts[1] != "register")
+                            DbProcessor.CheckAuth(urlParts[2], urlParts[3]);
                         msg = reqpro.GetResponseData(request.HttpMethod, urlParts, requestBody);
+                        response.StatusCode = (int)HttpStatusCode.OK;
                     }
                     catch (Exception e)
                     {
-                        msg = "request error! " + e.Message;
+                        msg = "Request error! " + e.Message;
                         Console.WriteLine(msg);
+                        response.StatusCode = (int)HttpStatusCode.BadRequest;
                     }
 
-                    response.StatusCode = (int)HttpStatusCode.OK;
+
                     byte[] b = Encoding.UTF8.GetBytes(msg);
                     context.Response.ContentLength64 = b.Length;
                     context.Response.OutputStream.Write(b, 0, b.Length);
